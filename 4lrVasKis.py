@@ -2,10 +2,13 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-plt.style.use('dark_background')
+# plt.style.use('grayscale')
+# plt.style.use('seaborn-dark')
+plt.style.use('https://github.com/dhaitz/matplotlib-stylesheets/raw/master/pitayasmoothie-dark.mplstyle')
+# plt.style.use('dark_background')
 import matplotlib.colors as mcolors
-def kubik(n: int) -> list:
 
+def kubik(n: int) -> list:
     data = []
     while len(data) < n:
         data.append(random.randint(1, 6))
@@ -46,20 +49,26 @@ def probability_solving(dataframe: pd.DataFrame):
     dataframe['Вероятность'] = probability
     return dataframe
 
+def get_plots(arr):
+    index = 0
+    fig, ax = plt.subplots(2, 2, figsize=[12, 8])
+    position = [[0, 0], [1, 0], [0, 1], [1, 1]]
+    for i in arr:
+        a1 = kubik(i)
+        b1 = count_rate(a1)
+        c1 = sort_rate(b1)
+        d1 = crate_dataframe(c1)
+        data = probability_solving(d1)
+        y_pos = len(data)
+        counts = np.random.randint(0, y_pos, y_pos)
+        colors = [["r", "b", "g", "w", "y", "m"][int(np.random.randint(0, 6, 1))] for _ in counts]
+        ax[position[index][0], position[index][1]].bar(data['Количество выпаданий'], data['Вероятность'], color = colors)
+        ax[position[index][0], position[index][1]].title.set_text(f"Вероятность при {i}")
+        index += 1
 
-a1 = kubik(10)
-b1 = count_rate(a1)
-c1 = sort_rate(b1)
-d1 = crate_dataframe(c1)
-data = probability_solving(d1)
-print(data)
-y_pos = len(data)
-counts = np.random.randint(0, y_pos, y_pos)
-colors = [["r", "b", "g", "w", "y", "m"][int(np.random.randint(0, 6, 1))] for _ in counts]
-plt.xlim(0,10)
-plt.bar(data['Частота'], data['Вероятность'], align='center', alpha=1, color = colors )
-plt.ylabel('Вероятность')
-plt.title('Теория вероятности')
+graf = [10, 100, 1000, 10000]
+get_plots(graf)
 
 plt.show()
+
 
