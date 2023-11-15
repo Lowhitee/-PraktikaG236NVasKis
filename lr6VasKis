@@ -1,0 +1,90 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('C:\Vassev Kiselev\Данные.csv', sep = "\t")
+
+df['balcony'] = df['balcony'].fillna(0)
+df['balcony'] = df['balcony'].astype(int)
+df.info() 
+df['first_day_exposition'] = pd.to_datetime(df['first_day_exposition']).dt.date
+
+df.isnull().sum()
+df['price_metr'] = df['last_price']/df['total_area']
+df['price_metr'] = df['price_metr'].astype(int) 
+
+df['day'] = pd.DatetimeIndex(df['first_day_exposition']).day
+df['month'] = pd.DatetimeIndex(df['first_day_exposition']).month
+df['year'] = pd.DatetimeIndex(df['first_day_exposition']).year
+
+f_t = df['floors_total'].median()
+df['floors_total'] = df['floors_total'].fillna(f_t)
+df['floors_total'] = df['floors_total'].astype(int)
+
+def floor_category(column):
+        if column[8] == 1:
+            return "Первый"
+        elif column[8] == column[6]:
+            return "Последний"
+        else:
+             return 'Другой'
+            
+df["kakoi_etazh"] = df.apply(floor_category, axis = 1)
+
+k_a = df['kitchen_area'].median()
+df['kitchen_area'] = df['kitchen_area'].fillna(k_a)
+l_a = df['living_area'].median()
+df['living_area'] = df['living_area'].fillna(l_a)
+df['living_total'] = df['living_area']/df['total_area']
+df['kitchen_total'] = df['kitchen_area']/df['total_area']
+
+
+# counts = np.random.randint(0, y_pos, y_pos)
+# plt.xticks(rotation=45)
+plt.bar(df['total_area'], df['last_price'], align='center', alpha=0.5, width = 10, color = "black")
+# plt.xticks(y_pos, df['Team'])
+
+plt.xlim([0, 1000])
+plt.ylim([0, 800000000])
+plt.ylabel('Цена')
+plt.xlabel('Площадь')
+plt.title('Отношение площади и цены')
+plt.grid()
+plt.show()
+df.describe()
+df['rooms'] = df['rooms'].replace(0, 1)
+
+plt.bar(df['rooms'], df['last_price'], align='center', alpha=0.5, width = 1, color = "black")
+plt.xlim([0, 20])
+# plt.xlim([0, 800000000])
+plt.ylabel('Цена')
+plt.xlabel('Количество комнат')
+plt.title('Отношение количества комнат и цены')
+plt.grid()
+plt.show()
+plt.bar(df['ceiling_height'], df['last_price'], align='center', alpha=0.5, width =10, color = "black")
+plt.xlim([1, 100])
+plt.ylim([0, 800000000])
+plt.ylabel('Цена')
+plt.xlabel('Высота потолков')
+plt.title('Отношение высоты потолков и цены')
+plt.grid()
+plt.show()
+d_e = df['days_exposition'].median()
+df['days_exposition'] = df['days_exposition'].fillna(d_e)
+
+plt.bar(df['first_day_exposition'], df['days_exposition'], align='center', alpha=0.5, width =10, color = "black")
+# plt.xlim([1, 100])
+# plt.xlim([0, 800000000])
+plt.xticks(rotation = 45)
+plt.ylabel('Продолжительность')
+plt.xlabel('Дата размещения')
+plt.title('Отношение продолжительности и даты')
+plt.grid()
+plt.show()
+med = df['days_exposition'].median()
+
+mean1 = df['days_exposition'].mean()
+mean1
+if df[df['total_area'] == 900]:
+    df.drop(labels=[19540], axis = 0)
